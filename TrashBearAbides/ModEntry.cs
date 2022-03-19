@@ -16,6 +16,9 @@ namespace TrashBearAbides
         /// <summary>The mod configuration from the player.</summary>
         private ModConfig Config;
 
+        /// <summary>Has custom event already run today?</summary>
+        private bool checkedTrashBearToday;
+
         /*********
         ** Public methods
         *********/
@@ -25,16 +28,29 @@ namespace TrashBearAbides
         {
             this.Config = this.Helper.ReadConfig<ModConfig>();
 
+            Helper.Events.GameLoop.DayStarted += (e, a) => clearTrashBearCheckFlag();
             Helper.Events.Player.Warped += (e, a) => addTrashBearAbides(a.NewLocation.NameOrUniqueName);
         }
 
         /*********
         ** Private methods
         *********/
+        /// <summary>Indicate that Trash Bear check has not been run today</summary>
+        private void clearTrashBearCheckFlag()
+        {
+            checkedTrashBearToday = false;
+        }
+
         /// <summary>Generate adjusted copy of Trash Bear if appropriate.</summary>
         /// <param name="locationName">Name of the new location.</param>
         private void addTrashBearAbides(string locationName)
         {
+            /// Has Trash Bear check already been run today?
+            if (checkedTrashBearToday)
+            {
+                return;
+            }
+
             // Did player enter Cindersap Forest?
             if (locationName != "Forest")
             {
@@ -55,7 +71,8 @@ namespace TrashBearAbides
             }
 
             // Have players completed standard Trash Bear quest?
-            if (!StardewValley.Network.NetWorldState.checkAnywhereForWorldStateID("trashBearDone"))
+            // Can be overridden by config (allows testing using a newer save)
+            if (!StardewValley.Network.NetWorldState.checkAnywhereForWorldStateID("trashBearDone") && !this.Config.TrashBearAppearsEarly)
             {
                 return;
             }
@@ -72,8 +89,21 @@ namespace TrashBearAbides
             if (trashBearRandom.NextDouble() < this.Config.TrashBearChance)
             {
                 where.characters.Add(new CustomTrashBear());
-                this.Monitor.Log($"[Trash Bear Abides] Trash Bear re-added to Cindersap Forest", LogLevel.Debug);
+                if (this.Config.TrashBearAbidesDebugOutput)
+                {
+                    this.Monitor.Log($"[Trash Bear Abides] Trash Bear re-added to Cindersap Forest", LogLevel.Debug);
+                }
             }
+            else
+            {
+                if (this.Config.TrashBearAbidesDebugOutput)
+                {
+                    this.Monitor.Log($"[Trash Bear Abides] Trash Bear is visiting another town today", LogLevel.Debug);
+                }
+            }
+
+            // Indicate that Trash Bear check has been run today
+            checkedTrashBearToday = true;
         }
     }
 }
