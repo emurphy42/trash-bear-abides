@@ -1,0 +1,6 @@
+﻿Description
+-----------
+
+Causes Trash Bear to continue appearing in Cindersap Forest after quest is completed.
+
+Allows configuration of how likely Trash Bear is to appear each day. (Still skips rainy days and festivals.)
