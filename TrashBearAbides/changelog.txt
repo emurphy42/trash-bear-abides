@@ -4,3 +4,5 @@
 1.0.0: Initial release.
 
 1.0.1: Limited check to once per day.
+
+1.1.0: Updated for Stardew Valley 1.6.
