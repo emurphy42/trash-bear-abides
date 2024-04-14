@@ -79,7 +79,7 @@ namespace TrashBearAbides
 
             // Don't add custom Trash Bear on rainy or festival days (same as standard)
             // https://github.com/veywrn/StardewValley/blob/master/StardewValley/Locations/Forest.cs
-            if (Game1.isRaining || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
+            if (Game1.isRaining || Utility.isFestivalDay())
             {
                 return;
             }
